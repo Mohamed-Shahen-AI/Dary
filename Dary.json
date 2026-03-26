@@ -1,0 +1,684 @@
+{
+  "name": "Dary",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        -192
+      ],
+      "id": "6b3a88eb-b0e0-43b8-a166-676f33ca79b9",
+      "name": "Telegram Trigger",
+      "webhookId": "93edf976-e523-4489-baa9-de03efe50648",
+      "credentials": {
+        "telegramApi": {
+          "id": "YAMCfD11sJcT55Ed",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.Message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1920,
+        -352
+      ],
+      "id": "36d582db-cbc0-42dd-9f6e-d571e0369631",
+      "name": "Send a text message",
+      "webhookId": "d84be895-3b41-419a-830f-b84fa88573b4",
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "YAMCfD11sJcT55Ed",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "Dary",
+        "remoteJid": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "messageText": "={{ $json.message }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api-english.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -16
+      ],
+      "id": "f7ecd56d-fa48-43ac-a024-6b22e2a64ced",
+      "name": "Send text",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zXB0NoxSoaSYwOjZ",
+          "name": "Evolution account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "09d801f9-f417-46ee-bb11-c4015a99da8f",
+              "leftValue": "={{ $json.row_number }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "dbd6d429-2d14-42ba-be21-44f98b59b28a",
+              "leftValue": "={{ $json.row_number }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        32,
+        -192
+      ],
+      "id": "ff348d3f-7410-4b3f-9898-e2a38b52c702",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1x737YcnziWYLjHmmBn9qoKU5HzOWXBB4FLX0v3C9bCs",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1x737YcnziWYLjHmmBn9qoKU5HzOWXBB4FLX0v3C9bCs/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone Number",
+              "lookupValue": "={{ $json.message.text }}"
+            },
+            {
+              "lookupColumn": "Status of Messaging",
+              "lookupValue": "Done"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -176,
+        -192
+      ],
+      "id": "16fdb86f-8d74-41be-bb76-fb1b0147a0df",
+      "name": "Check if the number is exist or not",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2jApfayuf7hTqZbd",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bb76d395-a9eb-4b1a-82d3-bab9390cadae",
+              "name": "Message",
+              "value": "Number already exists ⚠️",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        -384
+      ],
+      "id": "c7d57969-42b4-42cc-9f02-fb0b74020631",
+      "name": "The number already exist"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1x737YcnziWYLjHmmBn9qoKU5HzOWXBB4FLX0v3C9bCs",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "الورقة1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1x737YcnziWYLjHmmBn9qoKU5HzOWXBB4FLX0v3C9bCs/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status of Messaging": "={{ $json.Message }}",
+            "Phone Number": "={{ $('Telegram Trigger').item.json.message.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status of Messaging",
+              "displayName": "Status of Messaging",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status of Acceptance",
+              "displayName": "Status of Acceptance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1920,
+        64
+      ],
+      "id": "4c8c8379-24c6-46d7-90b7-1b08ad0dda38",
+      "name": "Add phone number to the sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2jApfayuf7hTqZbd",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "238f05ad-41f3-450e-a160-1cb09a9688c3",
+              "name": "Message",
+              "value": "Fail",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        80
+      ],
+      "id": "f8f27812-1ee7-4cbd-8358-8ed63b78ed75",
+      "name": "Error Message"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "30a7cf02-141d-4d17-9ba6-704e048f98f8",
+              "name": "Message",
+              "value": "Done",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        -128
+      ],
+      "id": "5a73fddd-5df0-4dbf-bdbf-231036b03dc2",
+      "name": "Message Done"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1456,
+        -368
+      ],
+      "id": "e83ef0d9-7298-4601-8bca-26d91c6d879c",
+      "name": "Merge",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const messageText = `سلام عليكم 👋\n\nإحنا فريق دارى، منصة بتساعد أصحاب العقارات فى تأجير وتسويق وحداتهم والوصول لعدد أكبر من المستأجرين.\n\nتواصلنا معك لأن عندنا اهتمام نضيف عقارك على المنصة ونساعد فى تسويقه بشكل أفضل.\n\nلو حابب تعرف تفاصيل أكتر عن طريقة العمل أو عندك أى استفسار، ابعتلنا رسالة وهنكون سعداء نوضح كل حاجة.\n\nتشرفنا بالتواصل معك 🌟`;\n\nreturn {\n  message: messageText,\n  platform_name: \"داري\",\n  status: \"draft\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        -16
+      ],
+      "id": "2229fef5-4e62-4090-a58d-ad29f86cf851",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1x737YcnziWYLjHmmBn9qoKU5HzOWXBB4FLX0v3C9bCs",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1x737YcnziWYLjHmmBn9qoKU5HzOWXBB4FLX0v3C9bCs/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone Number",
+              "lookupValue": "={{ $('Telegram Trigger').item.json.message.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        -16
+      ],
+      "id": "5b844b5a-a6c7-4ded-9d67-d3cff55628d0",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2jApfayuf7hTqZbd",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c73dd977-86d4-4828-af26-1337925fefed",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json['Status of Messaging'] }}",
+              "rightValue": "Fail",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1680,
+        -32
+      ],
+      "id": "eb733a65-aae4-4766-94f0-5f8b447c3abb",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1x737YcnziWYLjHmmBn9qoKU5HzOWXBB4FLX0v3C9bCs",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1x737YcnziWYLjHmmBn9qoKU5HzOWXBB4FLX0v3C9bCs/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": 0,
+            "Phone Number": "={{ $('Telegram Trigger').item.json.message.text }}",
+            "Status of Messaging": "={{ $('Merge1').item.json.Message }}"
+          },
+          "matchingColumns": [
+            "Phone Number"
+          ],
+          "schema": [
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status of Messaging",
+              "displayName": "Status of Messaging",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status of Acceptance",
+              "displayName": "Status of Acceptance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1920,
+        -128
+      ],
+      "id": "d67be674-c21c-4449-b753-936aec695797",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2jApfayuf7hTqZbd",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1456,
+        -32
+      ],
+      "id": "c6db6c8c-44a8-45a4-acbe-c9b86d03679f",
+      "name": "Merge1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check if the number is exist or not",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send text": {
+      "main": [
+        [
+          {
+            "node": "Message Done",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "The number already exist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if the number is exist or not": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "The number already exist": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add phone number to the sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Error Message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Message Done": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add phone number to the sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "d0c6b4e3-7690-4dd2-be1e-5065a21d52ec",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2d53b58c49dc86b57592e908eaa305a1b7171f9f7e9ca1c93755a41f1190de85"
+  },
+  "id": "G6-PptM2dRFC4gphJXuzi",
+  "tags": []
+}
